@@ -1,4 +1,5 @@
 using System.Net;
+using System.Text;
 
 namespace Task_1.Middlewares
 {
@@ -26,14 +27,17 @@ namespace Task_1.Middlewares
                 await HandleExceptionAsync(httpContext,
                     ex,
                     HttpStatusCode.InternalServerError,
-                    "Internal server error");
+                    ex.Message);
             }
         }
 
         private async Task HandleExceptionAsync(HttpContext context, Exception ex, HttpStatusCode httpStatusCode, string message)
         {
-            _logger.LogError(ex.Message);
-            _logger.LogError(ex.StackTrace);
+            _logger.LogCritical(ex.Message);
+            _logger.LogCritical(ex.StackTrace);
+
+            context.Response.StatusCode = (int)httpStatusCode;
+            context.Response.Body.WriteAsync(Encoding.UTF8.GetBytes(message));
         }
     }
 }
