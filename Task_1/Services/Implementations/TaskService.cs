@@ -1,7 +1,6 @@
 
 using Microsoft.EntityFrameworkCore;
 using Task_1.DAL.Interfaces;
-using Task_1.Domain.Entity;
 using Task_1.Domain.ViewModels;
 using Task_1.Services.Interfaces;
 
@@ -24,8 +23,8 @@ namespace Task_1.Services.Implementations
             {
                 Domain.Entity.Task task = new Domain.Entity.Task()
                 {
-                    Name = model.Name,
-                    Text = model.Text,
+                    Name = model.Name.Trim(),
+                    Text = model.Text.Trim(),
                     DatePublish = DateTime.UtcNow,
                     DateUpdate = DateTime.UtcNow
                 };
@@ -118,8 +117,8 @@ namespace Task_1.Services.Implementations
                     return false;
                 }
                 
-                task.Text = model.Text;
-                task.Name = model.Name;
+                task.Text = model.Text.Trim();
+                task.Name = model.Name.Trim();
                 task.DateUpdate = DateTime.UtcNow;
 
                 await _taskRepository.UpdateAsync(task);
