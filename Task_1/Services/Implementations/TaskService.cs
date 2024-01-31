@@ -1,6 +1,6 @@
-
 using Microsoft.EntityFrameworkCore;
 using Task_1.DAL.Interfaces;
+using Task_1.Domain.Exceptions;
 using Task_1.Domain.ViewModels;
 using Task_1.Services.Interfaces;
 
@@ -37,12 +37,12 @@ namespace Task_1.Services.Implementations
             catch (DbUpdateException ex)
             {
                 _logger.LogError(ex, "can't create new task");
-                return null;
+                throw;
             }
             catch (Exception ex) 
             {
                 _logger.LogError(ex, ex.Message);
-                return null;
+                throw;
             }
         }
 
@@ -55,7 +55,7 @@ namespace Task_1.Services.Implementations
                 if (task == null)
                 {
                     _logger.LogWarning($"task not found (id = {id})");
-                    return false;
+                    throw new EntityNotFoundException($"task not found (id = {id})");
                 }
 
                 await _taskRepository.DeleteAsync(task);
@@ -66,12 +66,12 @@ namespace Task_1.Services.Implementations
             catch (DbUpdateException ex)
             {
                 _logger.LogError(ex, "can't delete task");
-                return false;
+                throw;
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, ex.Message);
-                return false;
+                throw;
             }
         }
 
@@ -86,7 +86,7 @@ namespace Task_1.Services.Implementations
             catch (Exception ex)
             {
                 _logger.LogError(ex, ex.Message);
-                return null;
+                throw;
             }
         }
 
@@ -101,7 +101,7 @@ namespace Task_1.Services.Implementations
             catch (Exception ex)
             {
                 _logger.LogError(ex, ex.Message);
-                return null;
+                throw;
             }
         }
 
@@ -114,7 +114,7 @@ namespace Task_1.Services.Implementations
                 if (task == null)
                 {
                     _logger.LogWarning($"task not found (id = {model.Id})");
-                    return false;
+                    throw new EntityNotFoundException($"task not found (id = {model.Id})");
                 }
                 
                 task.Text = model.Text.Trim();
@@ -129,12 +129,12 @@ namespace Task_1.Services.Implementations
             catch (DbUpdateException ex)
             {
                 _logger.LogError(ex, "can't update task");
-                return false;
+                throw;
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, ex.Message);
-                return false;
+                throw;
             }
         }
     }

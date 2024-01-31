@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Task_1.Domain.Exceptions;
 using Task_1.Domain.ViewModels;
 using Task_1.Services.Interfaces;
 
@@ -18,65 +19,107 @@ namespace Task_1.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(int id) 
         {
-            Domain.Entity.Task task = await _taskService.GetAsync(id);
-
-            if (task == null)
+            try
             {
-                return BadRequest("task not found");
-            }
+                Domain.Entity.Task task = await _taskService.GetAsync(id);
 
-            return Ok(task);
+                if (task == null)
+                {
+                    return BadRequest("task not found");
+                }
+
+                return Ok(task);
+            }
+            catch(EntityNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
         }
 
         [HttpGet]
         public async Task<IActionResult> GetAll() 
         {
-            List<Domain.Entity.Task> tasks = await _taskService.GetAllAsync();
-
-            if (tasks == null)
+            try
             {
-                return StatusCode(500, "Internal server error");
+                List<Domain.Entity.Task> tasks = await _taskService.GetAllAsync();
+
+                return Ok(tasks);
+            }
+            catch (Exception ex)
+            {
+               return StatusCode(500, ex.Message);
             }
 
-            return Ok(tasks);
         }
 
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] TaskCreateViewModel model)
         {
-            Domain.Entity.Task task = await _taskService.CreateAsync(model);
-
-            if (task == null)
+            try
             {
-                return BadRequest("task not created");
-            }
+                Domain.Entity.Task task = await _taskService.CreateAsync(model);
 
-            return CreatedAtAction(nameof(Create), task);
+                if (task == null)
+                {
+                    return BadRequest("task not created");
+                }
+
+                return CreatedAtAction(nameof(Create), task);
+            }
+            catch(EntityNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
         }
 
         [HttpPut]
         public async Task<IActionResult> Update([FromBody] TaskUpdateViewModel model) 
         {
-            bool result = await _taskService.UpdateAsync(model);
-
-            if (!result)
+            try
             {
-                return BadRequest("task not updated");
-            }
+                bool result = await _taskService.UpdateAsync(model);
 
-            return NoContent();
+                if (!result)
+                {
+                    return BadRequest("task not updated");
+                }
+
+                return NoContent();
+            }
+            catch(EntityNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
         }
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            bool result = await _taskService.DeleteAsync(id);
-
-            if (!result)
+            try
             {
-                return BadRequest("task not deleted");
-            }
+                bool result = await _taskService.DeleteAsync(id);
 
-            return NoContent();
+                return NoContent();   
+            }
+            catch(EntityNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
         }
     }
 }
