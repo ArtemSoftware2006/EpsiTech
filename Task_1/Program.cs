@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Task_1.DAL;
 using Task_1.DAL.Implementations;
 using Task_1.DAL.Interfaces;
+using Task_1.Middlewares;
 using Task_1.Services.Implementations;
 using Task_1.Services.Interfaces;
 
@@ -28,6 +29,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 app.UseHttpsRedirection();
 
