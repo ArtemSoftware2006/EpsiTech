@@ -21,9 +21,7 @@ jobs:
     - name: Restore dependencies
       run: dotnet restore
     - name: Build
-      run: dotnet run --project ..\..\Task_1\ --no-restore
-    - name: Test
-      run: dotnet test --no-build --verbosity normal
+      run: dotnet run --project .\Task_1\Task_1.csproj --no-restore
   test:
     needs: build
     runs-on: ubuntu-latest
@@ -49,4 +47,4 @@ jobs:
       - name: Realese application
         run: dotnet publish -c Release
       - name: Run application
-        run: dotnet run -c release
+        run: dotnet run --project .\Task_1\Task_1.csproj -c release
