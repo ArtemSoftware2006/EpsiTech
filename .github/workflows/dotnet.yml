@@ -35,7 +35,7 @@ jobs:
         with:
           dotnet-version: 8.0.x
       - name: Test apllication
-        uses: dotnet test
+        run: dotnet test
   deploy:
     needs: test
     runs-on: ubuntu-latest
@@ -47,6 +47,6 @@ jobs:
         with:
           dotnet-version: 8.0.x
       - name: Realese application
-        uses: dotnet publish -c Release
+        run: dotnet publish -c Release
       - name: Run application
-        uses: dotnet run -c release
+        run: dotnet run -c release
