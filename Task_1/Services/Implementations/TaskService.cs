@@ -21,7 +21,7 @@ namespace Task_1.Services.Implementations
         {
             try
             {
-                Domain.Entity.Task task = new Domain.Entity.Task()
+                var task = new Domain.Entity.Task()
                 {
                     Name = model.Name.Trim(),
                     Text = model.Text.Trim(),
@@ -50,7 +50,7 @@ namespace Task_1.Services.Implementations
         {
             try
             {
-                Domain.Entity.Task task = await _taskRepository.GetAsync(id);
+                var task = await _taskRepository.GetAsync(id);
 
                 if (task == null)
                 {
@@ -79,9 +79,9 @@ namespace Task_1.Services.Implementations
         {
             try
             {
-                List<Domain.Entity.Task> tasks = await _taskRepository.GetAllAsync();
+                var tasks = await _taskRepository.GetAllAsync();
 
-                return tasks;
+                return await tasks.ToListAsync();
             }
             catch (Exception ex)
             {
@@ -94,7 +94,7 @@ namespace Task_1.Services.Implementations
         {
             try
             {
-                Domain.Entity.Task task = await _taskRepository.GetAsync(id);
+                var task = await _taskRepository.GetAsync(id);
 
                 return task;
             }
@@ -105,16 +105,16 @@ namespace Task_1.Services.Implementations
             }
         }
 
-        public async Task<bool> UpdateAsync(TaskUpdateViewModel model)
+        public async Task<bool> UpdateAsync(int id, TaskUpdateViewModel model)
         {
             try
             {
-                Domain.Entity.Task task = await _taskRepository.GetAsync(model.Id);
+                var task = await _taskRepository.GetAsync(id);
 
                 if (task == null)
                 {
-                    _logger.LogWarning($"task not found (id = {model.Id})");
-                    throw new EntityNotFoundException($"task not found (id = {model.Id})");
+                    _logger.LogWarning($"task not found (id = {id})");
+                    throw new EntityNotFoundException($"task not found (id = {id})");
                 }
                 
                 task.Text = model.Text.Trim();

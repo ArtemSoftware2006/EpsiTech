@@ -1,30 +1,29 @@
 using System.Net;
 using System.Text;
+using System.Text.Json;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Task_1.Middlewares
 {
-    public class ExceptionHandlingMiddleware
+    public class ExceptionHandlingMiddleware : IMiddleware
     {
-        private readonly RequestDelegate _next;
         private readonly ILogger<ExceptionHandlingMiddleware> _logger;
 
         public ExceptionHandlingMiddleware(
-            RequestDelegate next,
             ILogger<ExceptionHandlingMiddleware> logger)
         {
-            _next = next;
             _logger = logger;
         }
 
-        public async Task InvokeAsync(HttpContext httpContext)
+        public async Task InvokeAsync(HttpContext context, RequestDelegate next)
         {
             try
             {
-                await _next(httpContext);
+                await next(context);
             }
             catch (Exception ex)
             {
-                await HandleExceptionAsync(httpContext,
+                await HandleExceptionAsync(context,
                     ex,
                     HttpStatusCode.InternalServerError,
                     ex.Message);
@@ -37,7 +36,20 @@ namespace Task_1.Middlewares
             _logger.LogCritical(ex.StackTrace);
 
             context.Response.StatusCode = (int)httpStatusCode;
-            context.Response.Body.WriteAsync(Encoding.UTF8.GetBytes(message));
+            
+            ProblemDetails problem = new() 
+            {
+                Status = (int)HttpStatusCode.InternalServerError,
+                Type = "Server error",
+                Title = "Server error",
+                Detail = String.Format("Error : {0}", ex.Message)
+            };
+
+            string json = JsonSerializer.Serialize(problem);
+
+            await context.Response.WriteAsync(json);
+
+            context.Response.ContentType = "application/json";
         }
     }
 }

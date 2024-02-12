@@ -22,9 +22,10 @@ namespace Task_1.DAL.Implementations
             _dbContext.Tasks.Remove(model);
         }
 
-        public async Task<List<Domain.Entity.Task>> GetAllAsync()
+        public async Task<DbSet<Domain.Entity.Task>> GetAllAsync()
         {
-            return await _dbContext.Tasks.ToListAsync();
+            // Можно возвращать DbSet 
+            return _dbContext.Tasks;
         }
 
         public async Task<Domain.Entity.Task> GetAsync(int id)

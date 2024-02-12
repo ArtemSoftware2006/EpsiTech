@@ -6,12 +6,12 @@ using Task_1.Services.Interfaces;
 namespace Task_1.Controllers
 {
     [ApiController]
-    [Route("api/[controller]/[action]")]
-    public class TaskController : ControllerBase
+    [Route("api/[controller]")]
+    public class TasksController : ControllerBase
     {
         private readonly ITaskService _taskService;
 
-        public TaskController(ITaskService taskService)
+        public TasksController(ITaskService taskService)
         {
             _taskService = taskService;
         }
@@ -21,7 +21,8 @@ namespace Task_1.Controllers
         {
             try
             {
-                Domain.Entity.Task task = await _taskService.GetAsync(id);
+                //Использовать var
+                var task = await _taskService.GetAsync(id);
 
                 if (task == null)
                 {
@@ -34,58 +35,36 @@ namespace Task_1.Controllers
             {
                 return NotFound(ex.Message);
             }
-            catch (Exception ex)
-            {
-                return StatusCode(500, ex.Message);
-            }
         }
 
         [HttpGet]
         public async Task<IActionResult> GetAll() 
         {
-            try
-            {
-                List<Domain.Entity.Task> tasks = await _taskService.GetAllAsync();
+            var tasks = await _taskService.GetAllAsync();
 
-                return Ok(tasks);
-            }
-            catch (Exception ex)
-            {
-               return StatusCode(500, ex.Message);
-            }
-
+            return Ok(tasks);
         }
 
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] TaskCreateViewModel model)
-        {
-            try
-            {
-                Domain.Entity.Task task = await _taskService.CreateAsync(model);
+        {   
+            var task = await _taskService.CreateAsync(model);
 
-                if (task == null)
-                {
-                    return BadRequest("task not created");
-                }
+            if (task == null)
+            {
+                return BadRequest("task not created");
+            }
 
-                return CreatedAtAction(nameof(Create), task);
-            }
-            catch(EntityNotFoundException ex)
-            {
-                return NotFound(ex.Message);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, ex.Message);
-            }
+            return CreatedAtAction(nameof(Create), task);
+            //Убрать обработку 500. Её надо обрабатывать в middleware
         }
 
-        [HttpPut]
-        public async Task<IActionResult> Update([FromBody] TaskUpdateViewModel model) 
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Update([FromBody] TaskUpdateViewModel model, int id) 
         {
             try
             {
-                bool result = await _taskService.UpdateAsync(model);
+                bool result = await _taskService.UpdateAsync(id, model);
 
                 if (!result)
                 {
@@ -97,10 +76,6 @@ namespace Task_1.Controllers
             catch(EntityNotFoundException ex)
             {
                 return NotFound(ex.Message);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, ex.Message);
             }
         }
         [HttpDelete("{id}")]
@@ -115,10 +90,6 @@ namespace Task_1.Controllers
             catch(EntityNotFoundException ex)
             {
                 return NotFound(ex.Message);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, ex.Message);
             }
         }
     }
