@@ -56,7 +56,6 @@ namespace Task_1.Controllers
             }
 
             return CreatedAtAction(nameof(Create), task);
-            //Убрать обработку 500. Её надо обрабатывать в middleware
         }
 
         [HttpPut("{id}")]

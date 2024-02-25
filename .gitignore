@@ -5,7 +5,7 @@
 
 # dotenv files
 .env
-
+coveragereport
 # User-specific files
 *.rsuser
 *.suo
